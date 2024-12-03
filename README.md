@@ -1,12 +1,13 @@
-
 # DevOops
 
 ## 🔅 소개
+
 DevOops - 개발자들의 "Oops!"를 즐겁게 극복하다
 DevOops는 타이핑 속도 게임, 오류 찾기 게임, 그리고 커뮤니티 게시판을 통해 개발자들이 자주 마주하는 "Oops!" 순간을 대비하기 위한 웹사이트입니다.
 개발 중 자주 마주하는 실수들, 끊임없는 디버깅의 고통, 그리고 소소한 웃음거리까지 모두 DevOops에서 즐겁게 나누세요. 게임과 커뮤니티가 결합된 공간에서 실력을 키우고, 동료 개발자들과 함께 성장해 나갈 수 있습니다.
 
 🔥 주요 기능
+
 - 타이핑 속도 게임: 더 빠르고 정확하게 코딩할 수 있도록 타이핑 실력을 연마하세요.
 - 오류/오타 찾기 게임: 코드 속 숨어 있는 "Oops!"를 찾아내는 실력을 키워보세요.
 - 커뮤니티 게시판: 자유롭게 글을 작성하고, 당신만의 개발 이야기를 공유해 보세요. 프로젝트를 함께할 팀원을 모집하거나, 개발 관련 질문과 답변을 주고받으며 커뮤니티를 만들어가세요.
@@ -14,10 +15,10 @@ DevOops는 타이핑 속도 게임, 오류 찾기 게임, 그리고 커뮤니티
 개발자들에게는 "Oops!"도 하나의 즐거운 도전입니다!
 DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들과 함께 멋진 여정을 시작해 보세요. 🚀
 
-
 ---
-<!-- 
-## 🧾 목차 
+
+<!--
+## 🧾 목차
 - [소개](#소개)
 - [페이지 구성](#페이지구성)
 - [설치](#설치)
@@ -25,8 +26,8 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
 
 --- -->
 
+## 💻 페이지구성
 
-## 💻 페이지구성 
   <details>
     <summary> 메인화면</summary>
     <img src="https://github.com/user-attachments/assets/59dd073d-efff-4107-8d3b-41ba93599187" alt="메인" width="80%">
@@ -57,7 +58,6 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
     <summary>오류찾기 챌린지</summary>
     <img src="https://github.com/user-attachments/assets/d728a84a-c9ce-481e-9927-b9e8b22a991d" alt="오류찾기챌린지" width="80%">
 
-    
   </details>
   <details>
     <summary>랭킹</summary>
@@ -73,7 +73,6 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
   <img src="https://github.com/user-attachments/assets/3767bf02-070b-4438-9325-f9b1e739eb12" alt="게시판" width="80%">
   <img src="https://github.com/user-attachments/assets/1bbfe784-1b4f-47aa-a9b2-ec3a7ae36002" alt="글보기" width="80%">
 
-    
   </details>
    <details>
     <summary>홍보 게시판</summary>
@@ -81,21 +80,12 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
 
   </details>
 
-
-
-
-
-
-
-
-
-
 ---
 
-## 🛠️ 설치 
+## 🛠️ 설치
 
- 
 ####🚨🚨 Install 모아보기 🚨🚨
+
 ```
     npm install
     npm install react-router-dom
@@ -104,7 +94,7 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
     npm install react-syntax-highlighter
     npm install bootstrap
     npm install -D tailwindcss
-    npx tailwindcss init     
+    npx tailwindcss init
     npm install framer-motion
     npm install @faker-js/faker
     npm install classnames
@@ -124,52 +114,61 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
    npm install
    ```
 3. React Router DOM
-    ```bash
-    npm install react-router-dom
-    ```
+
+   ```bash
+   npm install react-router-dom
+   ```
 
 4. React Slick 및 Slick Carousel
-    ```bash
-    npm install react-slick slick-carousel
-    ```
+
+   ```bash
+   npm install react-slick slick-carousel
+   ```
 
 5. React Icons 및 추가 라이브러리
-    ```bash
-    npm install react-icons
-    npm install react-syntax-highlighter
-    npm install bootstrap
-    ```
+
+   ```bash
+   npm install react-icons
+   npm install react-syntax-highlighter
+   npm install bootstrap
+   ```
 
 6. TailwindCSS 설치 및 초기화
-    ```bash
-    npm install -D tailwindcss
-    npx tailwindcss init
-    ```
 
-7.  Framer Motion
-    ```bash
-    npm install framer-motion
-    ```
+   ```bash
+   npm install -D tailwindcss
+   npx tailwindcss init
+   ```
+
+7. Framer Motion
+
+   ```bash
+   npm install framer-motion
+   ```
 
 8. Faker.js
-    ```bash
-    npm install @faker-js/faker
-    ```
 
-9.  Classnames (조건부 CSS)
-    ```bash
-    npm install classnames
-    ```
+   ```bash
+   npm install @faker-js/faker
+   ```
+
+9. Classnames (조건부 CSS)
+
+   ```bash
+   npm install classnames
+   ```
 
 10. PrismJS (코드 하이라이팅)
+
     ```bash
     npm install --save prismjs
-    ``` 
+    ```
 
-11.  React Quill (글쓰기 옵션)
-     ```
-     npm install react-quill
-     ```
+11. React Quill (글쓰기 옵션)
+
+    ```
+    npm install react-quill
+    ```
 
 12. Redux 설치 (계정별 점수 관리)
     ```bash
@@ -179,13 +178,19 @@ DevOops에서 실수를 게임으로, 경험을 성장으로 바꾸고 동료들
     ```
 
 ---
-##  📌 프로젝트실행 
-``` 
+
+## 📌 프로젝트실행
+
+```
 npm start
 ```
+
 ### 로그인 데이터
-| 아이디    | 비번  |
-| ------------- | ----------- |
-| ckals413  | 1234  |
 
-
+| 아이디   | 비번   |
+| -------- | ------ |
+| jjang9   | 987654 |
+| ckals413 | 123456 |
+| dong     | qwerty |
+| suki     | zxcvbn |
+| nanana   | poiuyt |
