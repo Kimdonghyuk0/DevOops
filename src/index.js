@@ -1,19 +1,30 @@
 // src/index.js
 
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { BrowserRouter } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import { initializeState } from "./utils/initializeState";
+import { scheduleMidnightReset } from "./utils/resetScoresMidnight";
+import ScrollToTop from "./utils/ScrollTop";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+initializeState(); // 시작 시 Redux 동기화
+scheduleMidnightReset(); // 자정에 점수 초기화
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  //<React.StrictMode>
+  <Provider store={store}>
     <BrowserRouter>
+      <ScrollToTop />
       <App />
     </BrowserRouter>
-  </React.StrictMode>
+  </Provider>
+  //</React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

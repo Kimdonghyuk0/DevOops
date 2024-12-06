@@ -1,6 +1,6 @@
-// src/routes/BoardPage.js
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux"; // Redux 상태 가져오기
+import { useLocation, useNavigate } from "react-router-dom";
 import BoardCard from "../components/BoardCard";
 import SubmitButton from "../components/SubmitButton";
 import Pagination from "../components/Pagination";
@@ -8,46 +8,109 @@ import "./css/BoardPage.css";
 
 const ITEMS_PER_PAGE = 12;
 
-const BoardPage = ({ posts, boardType }) => {
+const BoardPage = ({ posts, boardType, setPosts }) => {
+  const users = useSelector((state) => state.users); // Redux에서 사용자 정보 가져오기
   const navigate = useNavigate();
   const location = useLocation();
 
   const query = new URLSearchParams(location.search);
-  const initialPage = parseInt(query.get("page")) || 1; // 현재 페이지 URL 쿼리에서 가져옴
+  const initialPage = parseInt(query.get("page")) || 1;
 
   const [currentPage, setCurrentPage] = useState(initialPage);
+  const [showModal, setShowModal] = useState(false);
 
-  const filteredPosts = posts.filter((post) => post.boardType === boardType); // 선택한 게시판 유형의 게시글 필터링
-  const indexOfLastPost = currentPage * ITEMS_PER_PAGE; // 마지막 게시글 인덱스
-  const indexOfFirstPost = indexOfLastPost - ITEMS_PER_PAGE; // 첫 게시글 인덱스
-  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost); // 현재 페이지의 게시글 추출
-  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE); // 전체 페이지 수 계산
+  // 게시글 정보를 사용자 Redux 상태와 동기화
+  const enrichedPosts = posts.map((post) => {
+    console.log("boardType in BoardPage (enrichedPosts):", post.boardType); // 디버깅 로그
+    const authorData = users.find((user) => user.id === post.authorId);
+
+    // 댓글 데이터 로드
+    const savedComments = localStorage.getItem(
+      `comments-${post.boardType}-${post.id}`
+    );
+    let commentCount = 0;
+    if (savedComments) {
+      try {
+        const parsedComments = JSON.parse(savedComments);
+        commentCount = parsedComments.reduce((count, comment) => {
+          return count + 1 + (comment.replies ? comment.replies.length : 0);
+        }, 0);
+      } catch (error) {
+        console.error("Error parsing comments:", error);
+      }
+    }
+
+    // 좋아요 데이터 로드 (boardType 포함)
+    const likeKey = `likes-${post.boardType}-${post.id}`;
+    const storedLikes = localStorage.getItem(likeKey);
+    const likeCount = storedLikes ? Number(storedLikes) : post.likeCount || 0;
+
+    return {
+      ...post,
+      author: authorData?.name || post.author, // Redux에서 이름 가져오기
+      authorProfile:
+        authorData?.profileImage || "https://via.placeholder.com/32",
+      commentCount,
+      likeCount,
+    };
+  });
+
+  // 게시판 타입에 맞는 게시글 필터링 및 정렬
+  const filteredPosts = enrichedPosts
+    .filter((post) => post.boardType === boardType)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  // 페이지네이션 로직
+  const indexOfLastPost = currentPage * ITEMS_PER_PAGE;
+  const indexOfFirstPost = indexOfLastPost - ITEMS_PER_PAGE;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
 
   useEffect(() => {
-    setCurrentPage(initialPage); // URL이 변경되면 페이지 상태 업데이트
+    setCurrentPage(initialPage);
   }, [initialPage]);
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber); // 페이지 변경 핸들러
+    setCurrentPage(pageNumber);
     navigate(`?page=${pageNumber}`);
   };
 
-  const placeholders = Array(ITEMS_PER_PAGE - currentPosts.length).fill(null); // 빈 카드 생성
+  const handleWriteClick = () => {
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    if (loggedInUser) {
+      navigate("/board/create");
+    } else {
+      setShowModal(true);
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const placeholders = Array(ITEMS_PER_PAGE - currentPosts.length).fill(null);
 
   return (
     <div className="board-page">
       <div className="board-content-wrapper">
         <div className="board-header">
-          <h2>{boardType === "free" ? "자유 게시판" : "팀원 모집 게시판"}</h2>
-          <Link to="/board/create">
-            <SubmitButton
-              label="글쓰기"
-              backgroundColor="#3333ff"
-              color="#fff"
-              fontSize="1.2em"
-              padding="12px 24px"
-            />
-          </Link>
+          <div className="board-title-container">
+            <h2>{boardType === "free" ? "자유 게시판" : "팀원 모집 게시판"}</h2>
+            <p className="board-subtitle">
+              {boardType === "free"
+                ? "DevOops에서 하고 싶은 이야기를 마음껏 해봐요!"
+                : "DevOops에서 함께 할 팀원을 구해보세요!"}
+            </p>
+          </div>
+          <SubmitButton
+            label="글쓰기"
+            backgroundColor="#8216a0"
+            color="#fff"
+            fontSize="1em"
+            padding="11px 20px"
+            onClick={handleWriteClick}
+          />
         </div>
 
         <div className="board-container">
@@ -68,6 +131,15 @@ const BoardPage = ({ posts, boardType }) => {
           onPageChange={handlePageChange}
         />
       </div>
+
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <p>로그인이 필요합니다. 로그인 후 글쓰기를 이용해주세요.</p>
+            <button onClick={closeModal}>확인</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

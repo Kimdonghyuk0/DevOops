@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import GeneratedWords from '../components/GeneratedWords';
-import RestartButton from '../components/RestartButton';
-import Results from '../components/Results';
-import UserTypings from '../components/UserTypings';
-import useEngine from '../hooks/useEngine';
+import React, { useEffect, useState } from "react";
+import GeneratedWords from "../components/GeneratedWords";
+import RestartButton from "../components/RestartButton";
+import { useNavigate } from "react-router-dom";
+import Results from "../components/Results";
+import UserTypings from "../components/UserTypings";
+import useEngine from "../hooks/useEngine";
+import TypingGameRanking from "../components/TypingGameRank";
 
 const Challenge = () => {
   const {
@@ -21,7 +23,7 @@ const Challenge = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showToast, setShowToast] = useState(true); // Control toast visibility
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Hide the toast after 3 seconds
     const timer = setTimeout(() => {
@@ -33,7 +35,7 @@ const Challenge = () => {
 
   useEffect(() => {
     // Show modal when the game ends
-    if (state === 'finish') {
+    if (state === "finish") {
       setIsModalOpen(true);
     }
   }, [state]);
@@ -42,6 +44,16 @@ const Challenge = () => {
     setIsModalOpen(false); // Close the modal
   };
 
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+    // 비로그인 상태라면 로그인 페이지로 이동
+    if (!loggedInUser) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+  });
   return (
     <div className="flex flex-col items-center justify-center min-h-[35vh] ">
       <br />
@@ -64,15 +76,22 @@ const Challenge = () => {
         nextLineText={nextLineText}
       />
       <RestartButton
-        className={'mx-auto mt-10 text-slate-500'}
+        className={"mx-auto mt-10 text-slate-500"}
         onRestart={restart}
       />
       {/* Toast message */}
       {showToast && (
-        <div className="mt-2 p-2 font-sans font-bold text-yellow-500 rounded shadow">
+        <div
+          className="mt-2 p-2 font-sans font-bold text-yellow-500 rounded shadow"
+          style={{ fontFamily: "'D2coding', sans-serif" }}
+        >
           타이핑시 챌린지가 시작됩니다.
         </div>
       )}
+
+      <br></br>
+      <br></br>
+      <TypingGameRanking />
       {/* Modal controlled by isModalOpen */}
       {isModalOpen && (
         <Results
@@ -92,7 +111,6 @@ const Challenge = () => {
 const WordsContainer = ({ children }) => {
   return (
     <div className="w-full max-w-5xl mt-4">
-      <p className="text-xl mb-2">Current Line:</p>
       <div
         className={`relative font-mono text-2xl bg-gray-700 p-4 rounded overflow-x-auto`}
       >
@@ -102,12 +120,12 @@ const WordsContainer = ({ children }) => {
   );
 };
 
-const NextLinePreview = ({ nextLineText, className = '' }) => {
+const NextLinePreview = ({ nextLineText, className = "" }) => {
   return (
     <div className="w-full max-w-5xl mt-4">
-      <p className="text-xl mb-2 opacity-50">Next Line:</p>
+      <p className="text-xl font-mono mb-2 opacity-50">Next</p>
       <div
-        className={`relative font-mono text-2xl bg-gray-700 p-4 rounded opacity-30 overflow-x-auto`}
+        className={`relative font-mono text-2xl text-gray-100 bg-gray-700 p-4 rounded opacity-30 overflow-x-auto`}
       >
         {nextLineText}
       </div>
@@ -117,7 +135,10 @@ const NextLinePreview = ({ nextLineText, className = '' }) => {
 
 const CountdownTimer = ({ timeLeft }) => {
   return (
-    <h2 className="text-primary-400 text-2xl font-mono text-yellow-500">
+    <h2
+      className="text-primary-400 text-2xl font-mono text-yellow-500"
+      style={{ fontWeight: "bold" }}
+    >
       Time: {timeLeft}
     </h2>
   );

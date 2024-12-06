@@ -1,6 +1,7 @@
 /* src/routes/css/PostCreatePage.css */
 
 .post-create-page {
+  font-family: "D2coding", sans-serif;
   max-width: 1000px;
   margin: 20px auto;
   padding: 30px;
@@ -37,6 +38,7 @@
   background-color: #fff;
   width: 100%; /* 부모 컨테이너의 너비에 맞게 설정 */
   box-sizing: border-box; /* 패딩 포함한 너비 설정 */
+  color: #000;
 }
 
 .post-create-page .quill-editor {
@@ -47,6 +49,7 @@
   padding: 10px;
   width: 100%; /* Quill 에디터가 부모 컨테이너의 너비에 맞게 확장 */
   box-sizing: border-box;
+  color: #000;
 }
 
 .post-create-page .ql-editor {
@@ -56,9 +59,9 @@
 /* 작성 완료 버튼 스타일 */
 .submit-button {
   padding: 15px;
-  font-size: 1.2em;
+  font-size: 1em;
   color: #fff;
-  background-color: #007bff;
+  background-color: #8216a0;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -69,14 +72,18 @@
   background-color: #0056b3;
 }
 
+.post-create-page p {
+  color: #000; /* 기본 단락 텍스트를 검정색으로 강제 설정 */
+}
+
 /* 취소 버튼 스타일 */
 .cancel-button {
-  padding: 10px 20px;
+  padding: 10px 25px;
   font-size: 1em;
-  color: #666;
-  background-color: #ddd; /* 회색 배경 */
+  color: #000000;
+  background-color: #e5e5e5; /* 회색 배경 */
   border: none;
-  border-radius: 6px;
+  border-radius: 50px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -113,6 +120,12 @@
   text-align: center;
 }
 
+.modal button {
+  background-color: #8216a0 !important;
+  border-radius: 50px !important;
+  color: white;
+}
+
 .modal-buttons {
   display: flex;
   justify-content: center;
@@ -130,11 +143,13 @@
 }
 
 .modal-buttons button:first-child {
-  background-color: #ddd;
+  background-color: #ddd !important;
+  color: black;
 }
 
 .modal-buttons button:last-child {
-  background-color: #007bff;
+  background-color: #8216a0 !important;
+  border-radius: 50px;
   color: white;
 }
 

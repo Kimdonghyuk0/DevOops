@@ -1,55 +1,138 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux"; // Redux 상태 가져오기
 import Pagination from "./Pagination";
 import CommentItem from "./CommentItem";
 import "./css/CommentSection.css";
 
-const ITEMS_PER_PAGE = 10; // 페이지당 표시할 댓글 수
+const ITEMS_PER_PAGE = 10;
 
-const CommentSection = () => {
-  const [comments, setComments] = useState([]); // 댓글 목록
-  const [newComment, setNewComment] = useState(""); // 새로운 댓글 입력
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
-  const [replyComment, setReplyComment] = useState({}); // 대댓글 상태
+const CommentSection = ({
+  boardType,
+  postId,
+  comments,
+  setComments,
+  loggedInUser,
+}) => {
+  const [newComment, setNewComment] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [replyComment, setReplyComment] = useState({});
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
-  // 댓글 입력 변화 시 호출
+  // Redux에서 사용자 정보 가져오기
+  const users = useSelector((state) => state.users);
+
+  // 댓글 데이터를 로컬 스토리지에서 불러오기
+  useEffect(() => {
+    if (!boardType || !postId) {
+      console.error("boardType 또는 postId가 정의되지 않았습니다.", {
+        boardType,
+        postId,
+      });
+      return;
+    }
+
+    console.log("boardType in CommentSection:", boardType); // 디버깅 로그
+    const storedComments = localStorage.getItem(
+      `comments-${boardType}-${postId}`
+    );
+    if (storedComments) {
+      try {
+        const parsedComments = JSON.parse(storedComments);
+        setComments(parsedComments);
+      } catch (err) {
+        console.error(
+          "로컬 스토리지에서 댓글 데이터를 파싱하는 중 오류 발생:",
+          err
+        );
+      }
+    }
+  }, [boardType, postId, setComments]);
+
+  // Redux 사용자 정보와 댓글 데이터 동기화
+  useEffect(() => {
+    if (!boardType || !postId) return;
+
+    const syncCommentsWithUsers = () => {
+      const updatedComments = comments.map((comment) => {
+        const authorData = users.find((user) => user.id === comment.authorId);
+        return {
+          ...comment,
+          author: authorData?.name || "unknown",
+          authorProfile:
+            authorData?.profileImage || "https://via.placeholder.com/32",
+          replies: comment.replies.map((reply) => {
+            const replyAuthorData = users.find(
+              (user) => user.id === reply.authorId
+            );
+            return {
+              ...reply,
+              author: replyAuthorData?.name || "unknown",
+              authorProfile:
+                replyAuthorData?.profileImage ||
+                "https://via.placeholder.com/32",
+            };
+          }),
+        };
+      });
+
+      if (JSON.stringify(updatedComments) !== JSON.stringify(comments)) {
+        setComments(updatedComments);
+        localStorage.setItem(
+          `comments-${boardType}-${postId}`,
+          JSON.stringify(updatedComments)
+        );
+      }
+    };
+
+    syncCommentsWithUsers();
+  }, [comments, users, boardType, postId, setComments]);
+
   const handleCommentChange = (e) => {
     const input = e.target.value;
     const newLineCount = (input.match(/\n/g) || []).length;
     if (newLineCount < 5) {
-      // 줄바꿈 제한
       setNewComment(input);
     }
   };
 
-  // 댓글 제출 시 호출
   const handleCommentSubmit = (e) => {
     e.preventDefault();
+    if (!loggedInUser) {
+      setModalMessage("로그인이 필요합니다. 로그인 후 댓글을 작성해주세요.");
+      setShowModal(true);
+      return;
+    }
     if (newComment.trim()) {
       const comment = {
-        id: Date.now(), // 댓글 고유 ID
+        id: Date.now(),
         content: newComment,
-        createdAt: new Date().toISOString(), // 생성 시간
-        likes: 0, // 좋아요 수 초기화
-        replies: [], // 대댓글 배열 초기화
+        createdAt: new Date().toISOString(),
+        likes: 0,
+        likedBy: [],
+        replies: [],
+        authorId: loggedInUser.id, // Redux에서 동기화하기 위한 ID 저장
       };
-      setComments([...comments, comment]); // 댓글 추가
-      setNewComment(""); // 입력 필드 초기화
+      const updatedComments = [...comments, comment];
+      setComments(updatedComments);
+      setNewComment("");
+      localStorage.setItem(
+        `comments-${boardType}-${postId}`,
+        JSON.stringify(updatedComments)
+      );
     }
   };
 
-  // 페이지 변경 시 호출
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  // 댓글 및 대댓글 개수 계산
   const getTotalCommentCount = () => {
     return comments.reduce((count, comment) => {
       return count + 1 + (comment.replies ? comment.replies.length : 0);
     }, 0);
   };
 
-  // 현재 페이지에 해당하는 댓글들 계산
   const indexOfLastComment = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstComment = indexOfLastComment - ITEMS_PER_PAGE;
   const currentComments = comments.slice(
@@ -57,6 +140,8 @@ const CommentSection = () => {
     indexOfLastComment
   );
   const totalPages = Math.ceil(comments.length / ITEMS_PER_PAGE);
+
+  const closeModal = () => setShowModal(false);
 
   return (
     <div className="comment-section">
@@ -83,6 +168,7 @@ const CommentSection = () => {
             setComments={setComments}
             replyComment={replyComment}
             setReplyComment={setReplyComment}
+            loggedInUser={loggedInUser}
           />
         ))}
       </ul>
@@ -92,6 +178,16 @@ const CommentSection = () => {
           totalPages={totalPages}
           onPageChange={handlePageChange}
         />
+      )}
+
+      {/* 로그인 요구 모달 */}
+      {showModal && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <p>{modalMessage}</p>
+            <button onClick={closeModal}>확인</button>
+          </div>
+        </div>
       )}
     </div>
   );
